@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Students | MEVI Student CRM{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div>
+        <h1>Student Directory</h1>
+        <p class="subtitle">Add, search, and manage student records in real time.</p>
+    </div>
+    <div class="header-badge">
+        Total: <strong id="student-count">{{ students|length }}</strong>
+    </div>
+</section>
+
+<div class="crm-layout">
+    <aside class="card form-card">
+        <div class="card-header">
+            <h2>Add New Student</h2>
+        </div>
+        <form id="add-student-form" action="{{ url_for('add_student') }}" method="POST" class="student-form">
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="e.g. Aarav Sharma" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" placeholder="e.g. aarav@example.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="course">Course / Program</label>
+                <input type="text" id="course" name="course" list="course-suggestions" placeholder="e.g. Python & Flask" required>
+                <datalist id="course-suggestions">
+                    <option value="Python & Flask">
+                    <option value="Web Development">
+                    <option value="Data Science">
+                    <option value="AI & Machine Learning">
+                    <option value="Cloud Computing">
+                </datalist>
+            </div>
+
+            <button type="submit" id="submit-btn" class="btn btn-primary btn-block">
+                + Add Student
+            </button>
+        </form>
+    </aside>
+
+    <section class="card table-card">
+        <div class="card-header table-toolbar">
+            <h2>Enrolled Students</h2>
+            <div class="toolbar-controls">
+                <input type="search" id="search-input" class="search-input" placeholder="Search name, email, or course...">
+                <select id="course-filter" class="filter-select" aria-label="Filter by course">
+                    <option value="">All Courses</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="data-table" id="students-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Student</th>
+                        <th>Email</th>
+                        <th>Course</th>
+                        <th>Enrolled</th>
+                        <th class="text-right">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="students-tbody">
+                    {% for student in students %}
+                        <tr data-id="{{ student.id }}"
+                            data-name="{{ student.name|lower }}"
+                            data-email="{{ student.email|lower }}"
+                            data-course="{{ student.course }}">
+                            <td class="muted">#{{ student.id }}</td>
+                            <td>
+                                <div class="student-cell">
+                                    <span class="avatar">{{ student.name[0]|upper }}</span>
+                                    <span class="student-name">{{ student.name }}</span>
+                                </div>
+                            </td>
+                            <td>{{ student.email }}</td>
+                            <td><span class="badge">{{ student.course }}</span></td>
+                            <td class="muted">{{ student.created_at }}</td>
+                            <td class="text-right">
+                                <form action="{{ url_for('delete_student', student_id=student.id) }}"
+                                      method="POST"
+                                      class="inline-form delete-form"
+                                      data-student-id="{{ student.id }}"
+                                      data-student-name="{{ student.name }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="empty-state" class="empty-state {% if students %}hidden{% endif %}">
+            <p id="empty-state-text">No students found. Add a student using the form on the left.</p>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+{% endblock %}
+

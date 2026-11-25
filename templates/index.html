@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | MEVI Student CRM{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div>
+        <h1>Student CRM Dashboard</h1>
+        <p class="subtitle">Overview of enrolled students and active courses.</p>
+    </div>
+    <a href="{{ url_for('students') }}" class="btn btn-primary">+ Manage Students</a>
+</section>
+
+<section class="stats-grid">
+    <div class="stat-card">
+        <span class="stat-label">Total Students</span>
+        <strong class="stat-value">{{ total_students }}</strong>
+        <span class="stat-meta">Registered records</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Active Courses</span>
+        <strong class="stat-value">{{ total_courses }}</strong>
+        <span class="stat-meta">Distinct programs</span>
+    </div>
+    <div class="stat-card">
+        <span class="stat-label">Portal Status</span>
+        <strong class="stat-value status-online">Online</strong>
+        <span class="stat-meta">SQLite database connected</span>
+    </div>
+</section>
+
+<section class="card">
+    <div class="card-header">
+        <h2>Recent Enrollments</h2>
+        <a href="{{ url_for('students') }}" class="link-action">View all &rarr;</a>
+    </div>
+
+    {% if recent_students %}
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Student</th>
+                        <th>Email</th>
+                        <th>Course</th>
+                        <th>Enrolled</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in recent_students %}
+                        <tr>
+                            <td class="muted">#{{ student.id }}</td>
+                            <td>
+                                <div class="student-cell">
+                                    <span class="avatar">{{ student.name[0]|upper }}</span>
+                                    <span class="student-name">{{ student.name }}</span>
+                                </div>
+                            </td>
+                            <td>{{ student.email }}</td>
+                            <td><span class="badge">{{ student.course }}</span></td>
+                            <td class="muted">{{ student.created_at }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p>No students enrolled yet.</p>
+            <a href="{{ url_for('students') }}" class="btn btn-primary">Add Your First Student</a>
+        </div>
+    {% endif %}
+</section>
+{% endblock %}
+
